@@ -18,7 +18,9 @@ vue-cli 脚手架构建工具
 
 浏览器访问 http://localhost:9527
 
-有问题联系qq：547265436
+
+后端github地址：https://github.com/djkdeveloper/mall.git
+后端码云地址：https://gitee.com/djkdeveloper/mall.git
 
 感谢
 感谢作者：PanJiaChen
