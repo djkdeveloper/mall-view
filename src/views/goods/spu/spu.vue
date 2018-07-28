@@ -93,6 +93,17 @@
             </el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="商品图片">
+          <el-upload ref="addupload"
+                     action="http://localhost:8081/mall-goods/upload"
+                     :on-success="uploadlode"
+                     :before-upload="beforeupload"
+                     :on-remove="removePic"
+                     list-type="picture-card">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -142,6 +153,18 @@
             </el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="商品图片">
+          <el-upload ref="uploadupload"
+                     action="http://localhost:8081/mall-goods/upload"
+                     :on-success="uploadlode"
+                     :before-upload="beforeupload"
+                     :on-remove="removePic"
+                     :file-list="pics"
+                     list-type="picture-card">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -189,6 +212,7 @@
       }
 
       return {
+        pics: [],
         brands: [],
         firstcategorys: [],
         secondcategorys: [],
@@ -204,7 +228,17 @@
           pageSize: 10,
           name: ''
         },
-        form: {name: '', id: '', price: '', stock: '', brandId: '', thirdCateId: '', firstCateId: '', secondCateId: ''},
+        form: {
+          name: '',
+          id: '',
+          price: '',
+          stock: '',
+          brandId: '',
+          thirdCateId: '',
+          firstCateId: '',
+          secondCateId: '',
+          pic: ''
+        },
         rules: {
           name: [
             {
@@ -330,6 +364,9 @@
         if (this.$refs["form"]) {
           this.$refs["form"].resetFields();
         }
+        if (this.$refs["addupload"]) {
+          this.$refs["addupload"].clearFiles();
+        }
       },
       cancel(formName) {
         this.showUpdate = false;
@@ -362,8 +399,18 @@
         });
       },
       create(formName) {
+
         this.$refs[formName].validate(valid => {
           if (valid) {
+
+            // 校验图片是否上传
+            if (!this.form.pic) {
+              this.$message({
+                type: 'error',
+                message: '请上传一张图片!'
+              });
+              return false;
+            }
             addSpu(this.form).then(() => {
               this.showAdd = false;
               this.getList();
@@ -380,6 +427,14 @@
       update(formName){
         this.$refs[formName].validate(valid => {
           if (valid) {
+            // 校验图片是否上传
+            if (!this.form.pic) {
+              this.$message({
+                type: 'error',
+                message: '请上传一张图片!'
+              });
+              return false;
+            }
             updateSpu(this.form).then(() => {
               this.showUpdate = false;
               this.getList();
@@ -402,7 +457,8 @@
           brandId: '',
           thirdCateId: '',
           firstCateId: '',
-          secondCateId: ''
+          secondCateId: '',
+          pic: ''
         };
       },
       handleUpdate(id){
@@ -415,8 +471,11 @@
             brandId: res.data.brandId,
             thirdCateId: res.data.thirdCateId,
             firstCateId: res.data.firstCateId,
-            secondCateId: res.data.secondCateId
+            secondCateId: res.data.secondCateId,
+            pic: res.data.pic
           }
+
+          this.pics = [{name: "", url: res.data.pic}];
 
           queryCateroryChildren(this.form.firstCateId).then(response => {
             this.secondcategorys = response.data;
@@ -442,6 +501,22 @@
         queryCateroryChildren(this.form.secondCateId).then(response => {
           this.thirdcategorys = response.data;
         })
+      },
+      uploadlode(response){
+        this.form.pic = response;
+      },
+      beforeupload()
+      {
+        if (this.form.pic) {
+          this.$message({
+            type: 'warn',
+            message: '图片只能上传一张!'
+          });
+          return false;
+        }
+      },
+      removePic(){
+        this.form.pic = '';
       }
     }
   }
