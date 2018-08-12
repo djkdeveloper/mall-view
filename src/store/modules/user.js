@@ -51,18 +51,8 @@ const user = {
       return new Promise((resolve, reject) => {
         loginByUsername(username, userInfo.password).then(response => {
           const data = response.data;
-          // 登录失败
-          if (data.result != 0) {
-            Message({
-              message: '用户名密码错误',
-              type: 'error',
-              duration: 1000
-            })
-          } else {
-            commit('SET_TOKEN', data.token)
-            setToken(data.token)
-          }
-
+          commit('SET_TOKEN', data.access_token)
+          setToken(data.access_token)
           resolve(response)
         }).catch(error => {
           reject(error)

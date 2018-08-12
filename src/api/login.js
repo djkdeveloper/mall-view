@@ -2,13 +2,16 @@ import request from '@/utils/request'
 
 export function loginByUsername(username, password) {
   const data = {
-    userName: username,
-    password: password
+    username: username,
+    password: password,
+    client_id: 'client_2',
+    client_secret: '123456',
+    grant_type: 'password'
   }
   return request({
-    url: '/mall-user/login',
+    url: '/uaa/oauth/token',
     method: 'post',
-    data
+    params: data
   })
 }
 

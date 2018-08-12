@@ -14,7 +14,7 @@ service.interceptors.request.use(config => {
   // Do something before request is sent
   if (store.getters.token) {
     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-    config.headers['Authorization'] = getToken()
+    config.headers['Authorization'] = "Bearer " + getToken()
   }
   return config
 }, error => {
@@ -27,15 +27,21 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => response,
   error => {
-    if (error.response.status == 468) {
+    if (error.response.status == 403) {
       Message({
         message: '您没有此权限！',
         type: 'error',
         duration: 3000
       })
+    } else if (error.response.status == 400) {
+      Message({
+        message: '用户名或密码错误！',
+        type: 'error',
+        duration: 3000
+      })
     } else {
       Message({
-        message: error.message,
+        message: '网络异常请重试',
         type: 'error',
         duration: 5 * 1000
       })
